@@ -40,10 +40,12 @@ class VehiclesService
             $violations = $validator->getValidator()->validate($data, $validations);
 
             $errors = [];
-            foreach ($violations as $violation) {
-                $errors[str_replace(['[', ']'],  '', $violation->getPropertyPath())] = $violation->getMessage();
-            }
+
             if ($violations->count() > 0) {
+                foreach ($violations as $violation) {
+                    $errors[str_replace(['[', ']'],  '', $violation->getPropertyPath())] = $violation->getMessage();
+                }
+
                 return [
                     'success' => true,
                     'valid' => false,

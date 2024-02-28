@@ -24,7 +24,7 @@ class VehiclesController extends AbstractController
     }
 
     #[Route('/vehicles', name: 'list_vehicles', methods: ['GET'])]
-    public function index(SerializerInterface $serializer): JsonResponse
+    public function index(): JsonResponse
     {
         try {
             $vehicles = $this->repository->findAll();
