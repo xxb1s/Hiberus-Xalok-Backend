@@ -34,7 +34,7 @@ class VehiclesRepository extends ServiceEntityRepository
             $vehicle->setBrand($data['brand']);
             $vehicle->setModel($data['model']);
             $vehicle->setPlate($data['plate']);
-            $vehicle->setLicenseRequired($data['license']);
+            $vehicle->setLicense($data['license']);
 
             $vehicle->setCreatedAt(new \DateTimeImmutable('now'));
 

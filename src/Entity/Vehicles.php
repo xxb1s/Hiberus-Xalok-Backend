@@ -25,7 +25,7 @@ class Vehicles
     private ?string $plate = null;
 
     #[ORM\Column(length: 1)]
-    private ?string $license_required = null;
+    private ?string $license = null;
 
     #[ORM\OneToMany(targetEntity: Trips::class, mappedBy: 'vehicle', orphanRemoval: true)]
     private Collection $trips;
@@ -85,14 +85,14 @@ class Vehicles
         return $this;
     }
 
-    public function getLicenseRequired(): ?string
+    public function getLicense(): ?string
     {
-        return $this->license_required;
+        return $this->license;
     }
 
-    public function setLicenseRequired(string $license_required): static
+    public function setLicense(string $license): static
     {
-        $this->license_required = $license_required;
+        $this->license = $license;
 
         return $this;
     }
@@ -161,10 +161,5 @@ class Vehicles
         $this->deleted_at = $deleted_at;
 
         return $this;
-    }
-
-    public function toArray(): array
-    {
-        return get_object_vars($this);
     }
 }
