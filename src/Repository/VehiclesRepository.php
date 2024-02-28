@@ -25,6 +25,7 @@ class VehiclesRepository extends ServiceEntityRepository
      * @param array $data
      * @psalm-param array{brand: string, model: string, plate: string, license: string} $data
      * @return array
+     * @psalm-return array{success: bool, msg: string, vehicle: Vehicles|null}
      */
     public function create(array $data): array
     {
@@ -35,17 +36,21 @@ class VehiclesRepository extends ServiceEntityRepository
             $vehicle->setPlate($data['plate']);
             $vehicle->setLicenseRequired($data['license']);
 
+            $vehicle->setCreatedAt(new \DateTimeImmutable('now'));
+
             $this->getEntityManager()->persist($vehicle);
             $this->getEntityManager()->flush();
 
             return [
                 'success' => true,
-                'msg' => 'ok'
+                'msg' => 'ok',
+                'vehicle' => $vehicle
             ];
         } catch (\Exception $exception) {
             return [
                 'success' => false,
-                'msg' => $exception->getMessage()
+                'msg' => $exception->getMessage(),
+                'vehicle' => null
             ];
         }
     }
