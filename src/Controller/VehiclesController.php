@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\Vehicles;
 use App\Repository\VehiclesRepository;
 use App\Service\VehiclesService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -79,6 +80,73 @@ class VehiclesController extends AbstractController
             'messages' => 'vehicle created',
             'errors' => [],
             'vehicle' => $vehicle
-        ]);
+        ], 201);
+    }
+
+    #[Route('/vehicles/{id}', name: 'edit_vehicle', requirements: ['id' => '\d+'], methods: ['PUT'])]
+    public function edit(Vehicles $vehicle, ValidatorInterface $validator, Request $request): JsonResponse
+    {
+        $data = $request->toArray();
+
+        if ($vehicle->getDeletedAt()) {
+            return $this->json([
+                'messages' => 'not found',
+                'errors' => []
+            ], 404);
+        }
+
+        $isValid = $this->service->validate($validator, $data);
+
+        if (!$isValid['success']) {
+            return $this->json([
+                'messages' => 'server error',
+                'errors' => []
+            ], 500);
+        }
+
+        if (!$isValid['valid']) {
+            return $this->json([
+                'messages' => 'invalid fields',
+                'errors' => $isValid['msg']
+            ], 422);
+        }
+
+        $update = $this->repository->update($vehicle, $data);
+        if (!$update['success']) {
+            return $this->json([
+                'messages' => 'server error',
+                'errors' => []
+            ], 500);
+        }
+        $vehicle = $update['vehicle'];
+
+        return $this->json([
+            'messages' => 'vehicle updated',
+            'errors' => [],
+            'vehicle' => $vehicle
+        ], 200);
+    }
+
+    #[Route('/vehicles/{id}', name: 'delete_vehicle', requirements: ['id' => '\d+'], methods: ['DELETE'])]
+    public function delete(Vehicles $vehicle): JsonResponse
+    {
+        $delete = $this->repository->delete($vehicle);
+
+        if ($vehicle->getDeletedAt()) {
+            return $this->json([
+                'messages' => 'not found',
+                'errors' => []
+            ], 404);
+        }
+
+        if (!$delete['success']) {
+            return $this->json([
+                'messages' => 'server error'
+            ], 500);
+        }
+
+        return $this->json([
+            'messages' => 'vehicle deleted'
+        ], 200);
     }
 }
