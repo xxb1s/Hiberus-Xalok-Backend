@@ -20,7 +20,7 @@ class Trips
 
     #[ORM\ManyToOne(inversedBy: 'trips')]
     #[ORM\JoinColumn(nullable: false)]
-    private ?Drivers $drivers = null;
+    private ?Drivers $driver = null;
 
     #[ORM\Column(type: Types::DATE_IMMUTABLE)]
     private ?\DateTimeImmutable $date = null;
@@ -47,12 +47,12 @@ class Trips
 
     public function getDriver(): ?Drivers
     {
-        return $this->drivers;
+        return $this->driver;
     }
 
-    public function setDriver(?Drivers $drivers): static
+    public function setDriver(?Drivers $driver): static
     {
-        $this->drivers = $drivers;
+        $this->driver = $driver;
 
         return $this;
     }
