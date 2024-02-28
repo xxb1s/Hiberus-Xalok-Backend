@@ -24,7 +24,7 @@ class Drivers
     #[ORM\Column(length: 1)]
     private ?string $license = null;
 
-    #[ORM\OneToMany(targetEntity: Trips::class, mappedBy: 'drivers', orphanRemoval: true)]
+    #[ORM\OneToMany(targetEntity: Trips::class, mappedBy: 'driver', orphanRemoval: true)]
     private Collection $trips;
 
     #[ORM\Column]
