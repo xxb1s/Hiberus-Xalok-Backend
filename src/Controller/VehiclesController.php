@@ -49,10 +49,10 @@ class VehiclesController extends AbstractController
     }
 
     #[Route('/vehicles', name: 'create_vehicle', methods: ['POST'])]
-    public function create(ValidatorInterface $validator, Request $request): JsonResponse
+    public function create(Request $request): JsonResponse
     {
         $data = $request->toArray();
-        $isValid = $this->service->validate($validator, $data);
+        $isValid = $this->service->validate($data);
         if (!$isValid['success']) {
             return $this->json([
                 'messages' => 'server error',
@@ -84,7 +84,7 @@ class VehiclesController extends AbstractController
     }
 
     #[Route('/vehicles/{id}', name: 'edit_vehicle', requirements: ['id' => '\d+'], methods: ['PUT'])]
-    public function edit(Vehicles $vehicle, ValidatorInterface $validator, Request $request): JsonResponse
+    public function edit(Vehicles $vehicle, Request $request): JsonResponse
     {
         $data = $request->toArray();
 
@@ -95,7 +95,7 @@ class VehiclesController extends AbstractController
             ], 404);
         }
 
-        $isValid = $this->service->validate($validator, $data);
+        $isValid = $this->service->validate($data);
 
         if (!$isValid['success']) {
             return $this->json([
@@ -130,14 +130,14 @@ class VehiclesController extends AbstractController
     #[Route('/vehicles/{id}', name: 'delete_vehicle', requirements: ['id' => '\d+'], methods: ['DELETE'])]
     public function delete(Vehicles $vehicle): JsonResponse
     {
-        $delete = $this->repository->delete($vehicle);
-
         if ($vehicle->getDeletedAt()) {
             return $this->json([
                 'messages' => 'not found',
                 'errors' => []
             ], 404);
         }
+
+        $delete = $this->repository->delete($vehicle);
 
         if (!$delete['success']) {
             return $this->json([
