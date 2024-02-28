@@ -3,8 +3,10 @@
 namespace App\Repository;
 
 use App\Entity\Vehicles;
+use DateTimeImmutable;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use Exception;
 
 /**
  * @extends ServiceEntityRepository<Vehicles>
@@ -50,7 +52,7 @@ class VehiclesRepository extends ServiceEntityRepository
             $vehicle->setPlate($data['plate']);
             $vehicle->setLicense($data['license']);
 
-            $vehicle->setCreatedAt(new \DateTimeImmutable('now'));
+            $vehicle->setCreatedAt(new DateTimeImmutable('now'));
 
             $this->getEntityManager()->persist($vehicle);
             $this->getEntityManager()->flush();
@@ -60,7 +62,7 @@ class VehiclesRepository extends ServiceEntityRepository
                 'msg' => 'ok',
                 'vehicle' => $vehicle
             ];
-        } catch (\Exception $exception) {
+        } catch (Exception $exception) {
             return [
                 'success' => false,
                 'msg' => $exception->getMessage(),
@@ -84,9 +86,8 @@ class VehiclesRepository extends ServiceEntityRepository
             $vehicle->setPlate($data['plate']);
             $vehicle->setLicense($data['license']);
 
-            $vehicle->setUpdatedAt(new \DateTimeImmutable('now'));
+            $vehicle->setUpdatedAt(new DateTimeImmutable('now'));
 
-            $this->getEntityManager()->persist($vehicle);
             $this->getEntityManager()->flush();
 
             return [
@@ -94,7 +95,7 @@ class VehiclesRepository extends ServiceEntityRepository
                 'msg' => 'ok',
                 'vehicle' => $vehicle
             ];
-        } catch (\Exception $exception) {
+        } catch (Exception $exception) {
             return [
                 'success' => false,
                 'msg' => $exception->getMessage(),
@@ -111,16 +112,15 @@ class VehiclesRepository extends ServiceEntityRepository
     public function delete(Vehicles $vehicle): array
     {
         try {
-            $vehicle->setDeletedAt(new \DateTimeImmutable('now'));
+            $vehicle->setDeletedAt(new DateTimeImmutable('now'));
 
-            $this->getEntityManager()->persist($vehicle);
             $this->getEntityManager()->flush();
 
             return [
                 'success' => true,
                 'msg' => 'ok'
             ];
-        } catch (\Exception $exception) {
+        } catch (Exception $exception) {
             return [
                 'success' => false,
                 'msg' => $exception->getMessage(),

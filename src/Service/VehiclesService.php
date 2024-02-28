@@ -4,17 +4,17 @@ namespace App\Service;
 
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Validator\ValidatorBuilder;
 
 class VehiclesService
 {
     /**
-     * @param ValidatorInterface $validator
      * @param array $data
      * @psalm-param array{brand: string, model: string, plate: string, license: string} $data
      * @return array
      * @psalm-return array{success: bool, valid: bool, msg:string|array}
      */
-    public function validate(ValidatorInterface $validator, array $data): array
+    public function validate(array $data): array
     {
         try {
             $validations = new Assert\Collection([
@@ -36,7 +36,9 @@ class VehiclesService
                 ])
             ]);
 
-            $violations = $validator->validate($data, $validations);
+            $validator = new ValidatorBuilder();
+            $violations = $validator->getValidator()->validate($data, $validations);
+
             $errors = [];
             foreach ($violations as $violation) {
                 $errors[str_replace(['[', ']'],  '', $violation->getPropertyPath())] = $violation->getMessage();
