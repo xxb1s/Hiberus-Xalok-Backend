@@ -7,6 +7,7 @@ use DateTimeImmutable;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 use Exception;
+use Doctrine\ORM\Query\Expr;
 
 /**
  * @extends ServiceEntityRepository<Drivers>
@@ -118,6 +119,39 @@ class DriversRepository extends ServiceEntityRepository
             return [
                 'success' => false,
                 'msg' => $exception->getMessage(),
+            ];
+        }
+    }
+
+    /**
+     * @param DateTimeImmutable $date
+     * @return array
+     * @psalm-return array{success: bool, drivers: Drivers[]}
+     */
+    public function availableDriversByDate(DateTimeImmutable $date, ?string $license = null): array
+    {
+        try {
+            $qb = $this->createQueryBuilder('d');
+
+            $qb->select('d')
+                ->leftJoin('d.trips', 't', Expr\Join::WITH, 'd = t.driver AND t.date = :date')
+                ->where('t.date IS NULL')
+                ->setParameter('date', $date);
+
+            if ($license) {
+                $qb->andWhere('d.license = :license')
+                    ->setParameter('license', $license);
+            }
+
+            $drivers = $qb->getQuery()->execute();
+            return [
+                'success' => true,
+                'drivers' => $drivers
+            ];
+        } catch (Exception $exception) {
+            return [
+                'success' => false,
+                'drivers' => []
             ];
         }
     }

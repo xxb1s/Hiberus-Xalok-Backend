@@ -6,6 +6,7 @@ use App\Entity\Drivers;
 use App\Entity\Vehicles;
 use App\Repository\DriversRepository;
 use App\Service\DriversService;
+use DateTimeImmutable;
 use Exception;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -24,10 +25,21 @@ class DriversController extends AbstractController
     }
 
     #[Route('/drivers', name: 'list_drivers', methods: ['GET'])]
-    public function index(): JsonResponse
+    public function index(Request $request): JsonResponse
     {
         try {
-            $drivers = $this->repository->findAll();
+            $date = $request->query->get('date');
+            $license = $request->query->get('license');
+            if ($date || $license) {
+                $date = is_null($date) ? new DateTimeImmutable('now') : new DateTimeImmutable($date);
+                $drivers = $this->repository->availableDriversByDate($date, $license);
+                if (!$drivers['success']) {
+                    throw new \RuntimeException('Driver Error');
+                }
+                $drivers = $drivers['drivers'];
+            } else {
+                $drivers = $this->repository->findAll();
+            }
 
             if (empty($drivers)) {
                 return $this->json([
@@ -40,11 +52,16 @@ class DriversController extends AbstractController
                 'messages' => 'list drivers',
                 'drivers' => $drivers
             ], 200, [], ['groups' => 'list_drivers']);
-        } catch (Exception $exception) {
+        } catch (\RuntimeException $exception) {
             return $this->json([
                 'messages' => 'server error',
                 'drivers' => []
             ], 500);
+        } catch (Exception $exception) {
+            return $this->json([
+                'messages' => 'invalid fields',
+                'drivers' => []
+            ], 422);
         }
     }
 
