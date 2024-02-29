@@ -5,6 +5,7 @@ namespace App\Repository;
 use App\Entity\Vehicles;
 use DateTimeImmutable;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\Query\Expr;
 use Doctrine\Persistence\ManagerRegistry;
 use Exception;
 
@@ -128,16 +129,20 @@ class VehiclesRepository extends ServiceEntityRepository
         }
     }
 
-    public function availableVehiclesByDate(DateTimeImmutable $dateTime): array
+    public function availableVehiclesByDate(DateTimeImmutable $dateTime, ?string $license = null): array
     {
         try {
             $qb = $this->createQueryBuilder('v');
 
             $qb->select('v')
-                ->leftJoin('v.trips', 't', 'v.id = t.vehicle_id')
-                ->where('t.date <> :date')
-                ->orWhere('t.date IS NULL')
+                ->leftJoin('v.trips', 't', Expr\Join::WITH, 'v = t.vehicle AND t.date = :date')
+                ->where('t.date IS NULL')
                 ->setParameter('date', $dateTime);
+
+            if ($license) {
+                $qb->andWhere('v.license = :license')
+                    ->setParameter('license', $license);
+            }
 
             $vehicles = $qb->getQuery()->execute();
             return [

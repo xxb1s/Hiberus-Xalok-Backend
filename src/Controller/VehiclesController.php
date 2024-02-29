@@ -31,9 +31,10 @@ class VehiclesController extends AbstractController
     {
         try {
             $date = $request->query->get('date');
-            if ($date) {
-                $date = new DateTimeImmutable($date);
-                $vehicles = $this->repository->availableVehiclesByDate($date);
+            $license = $request->query->get('license');
+            if ($date || $license) {
+                $date = is_null($date) ? new DateTimeImmutable('now') : new DateTimeImmutable($date);
+                $vehicles = $this->repository->availableVehiclesByDate($date, $license);
                 if (!$vehicles['success']) {
                     throw new RuntimeException('Vehicle Error');
                 }
