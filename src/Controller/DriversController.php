@@ -39,7 +39,7 @@ class DriversController extends AbstractController
             return $this->json([
                 'messages' => 'list drivers',
                 'drivers' => $drivers
-            ], 200);
+            ], 200, [], ['groups' => 'list_drivers']);
         } catch (Exception $exception) {
             return $this->json([
                 'messages' => 'server error',

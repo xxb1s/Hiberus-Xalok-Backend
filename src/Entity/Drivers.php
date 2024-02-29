@@ -6,6 +6,7 @@ use App\Repository\DriversRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: DriversRepository::class)]
 class Drivers
@@ -13,24 +14,30 @@ class Drivers
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['list_drivers'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['list_drivers'])]
     private ?string $name = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['list_drivers'])]
     private ?string $surname = null;
 
     #[ORM\Column(length: 1)]
+    #[Groups(['list_drivers'])]
     private ?string $license = null;
 
     #[ORM\OneToMany(targetEntity: Trips::class, mappedBy: 'driver', orphanRemoval: true)]
     private Collection $trips;
 
     #[ORM\Column]
+    #[Groups(['list_drivers'])]
     private ?\DateTimeImmutable $created_at = null;
 
     #[ORM\Column(nullable: true)]
+    #[Groups(['list_drivers'])]
     private ?\DateTimeImmutable $updated_at = null;
 
     #[ORM\Column(nullable: true)]
