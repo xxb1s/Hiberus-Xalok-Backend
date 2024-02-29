@@ -5,6 +5,7 @@ namespace App\Entity;
 use App\Repository\TripsRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: TripsRepository::class)]
 class Trips
@@ -12,20 +13,25 @@ class Trips
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['list_trips'])]
     private ?int $id = null;
 
     #[ORM\ManyToOne(inversedBy: 'trips')]
     #[ORM\JoinColumn(nullable: false)]
+    #[Groups(['list_trips'])]
     private ?Vehicles $vehicle = null;
 
     #[ORM\ManyToOne(inversedBy: 'trips')]
     #[ORM\JoinColumn(nullable: false)]
+    #[Groups(['list_trips'])]
     private ?Drivers $driver = null;
 
     #[ORM\Column(type: Types::DATE_IMMUTABLE)]
+    #[Groups(['list_trips'])]
     private ?\DateTimeImmutable $date = null;
 
     #[ORM\Column]
+    #[Groups(['list_trips'])]
     private ?\DateTimeImmutable $created_at = null;
 
     public function getId(): ?int

@@ -37,7 +37,7 @@ class TripsController extends AbstractController
             return $this->json([
                 'messages' => 'list trips',
                 'trips' => $trips
-            ], 200);
+            ], 200, [], ['groups' => ['list_trips', 'list_vehicles', 'list_drivers']]);
         } catch (\Exception $exception) {
             return $this->json([
                 'messages' => 'server error',
