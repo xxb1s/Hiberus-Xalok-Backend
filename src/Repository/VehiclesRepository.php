@@ -145,7 +145,6 @@ class VehiclesRepository extends ServiceEntityRepository
                 'vehicles' => $vehicles
             ];
         } catch (Exception $exception) {
-            dd($exception);
             return [
                 'success' => false,
                 'vehicles' => []
