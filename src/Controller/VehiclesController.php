@@ -5,6 +5,9 @@ namespace App\Controller;
 use App\Entity\Vehicles;
 use App\Repository\VehiclesRepository;
 use App\Service\VehiclesService;
+use DateTimeImmutable;
+use Exception;
+use RuntimeException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -24,10 +27,20 @@ class VehiclesController extends AbstractController
     }
 
     #[Route('/vehicles', name: 'list_vehicles', methods: ['GET'])]
-    public function index(): JsonResponse
+    public function index(Request $request): JsonResponse
     {
         try {
-            $vehicles = $this->repository->findAll();
+            $date = $request->query->get('date');
+            if ($date) {
+                $date = new DateTimeImmutable($date);
+                $vehicles = $this->repository->availableVehiclesByDate($date);
+                if (!$vehicles['success']) {
+                    throw new RuntimeException('Vehicle Error');
+                }
+                $vehicles = $vehicles['vehicles'];
+            } else {
+                $vehicles = $this->repository->findAll();
+            }
 
             if (empty($vehicles)) {
                 return $this->json([
@@ -39,12 +52,17 @@ class VehiclesController extends AbstractController
             return $this->json([
                 'messages' => 'list vehicles',
                 'vehicles' => $vehicles
-            ], 200);
-        } catch (\Exception $exception) {
+            ], 200, [], ['groups' => ['list_vehicles']]);
+        } catch (RuntimeException $exception) {
             return $this->json([
                 'messages' => 'server error',
                 'vehicles' => []
             ], 500);
+        } catch (Exception $exception) {
+            return $this->json([
+                'messages' => 'invalid fields',
+                'vehicles' => []
+            ], 422);
         }
     }
 

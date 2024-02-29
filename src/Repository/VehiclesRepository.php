@@ -128,6 +128,30 @@ class VehiclesRepository extends ServiceEntityRepository
         }
     }
 
+    public function availableVehiclesByDate(DateTimeImmutable $dateTime): array
+    {
+        try {
+            $qb = $this->createQueryBuilder('v');
+
+            $qb->select('v')
+                ->leftJoin('v.trips', 't', 'v.id = t.vehicle_id')
+                ->where('t.date <> :date')
+                ->orWhere('t.date IS NULL')
+                ->setParameter('date', $dateTime);
+
+            $vehicles = $qb->getQuery()->execute();
+            return [
+                'success' => true,
+                'vehicles' => $vehicles
+            ];
+        } catch (Exception $exception) {
+            dd($exception);
+            return [
+                'success' => false,
+                'vehicles' => []
+            ];
+        }
+    }
     //    /**
     //     * @return Vehicles[] Returns an array of Vehicles objects
     //     */

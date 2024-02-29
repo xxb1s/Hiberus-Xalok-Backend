@@ -6,6 +6,7 @@ use App\Repository\VehiclesRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: VehiclesRepository::class)]
 class Vehicles
@@ -13,27 +14,34 @@ class Vehicles
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['list_vehicles'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['list_vehicles'])]
     private ?string $brand = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['list_vehicles'])]
     private ?string $model = null;
 
     #[ORM\Column(length: 10)]
+    #[Groups(['list_vehicles'])]
     private ?string $plate = null;
 
     #[ORM\Column(length: 1)]
+    #[Groups(['list_vehicles'])]
     private ?string $license = null;
 
-    #[ORM\OneToMany(targetEntity: Trips::class, mappedBy: 'vehicle', orphanRemoval: true)]
+    #[ORM\OneToMany(targetEntity: Trips::class, mappedBy: 'vehicle', fetch: "LAZY", orphanRemoval: true)]
     private Collection $trips;
 
     #[ORM\Column]
+    #[Groups(['list_vehicles'])]
     private ?\DateTimeImmutable $created_at = null;
 
     #[ORM\Column(nullable: true)]
+    #[Groups(['list_vehicles'])]
     private ?\DateTimeImmutable $updated_at = null;
 
     #[ORM\Column(nullable: true)]
